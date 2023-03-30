@@ -7,6 +7,7 @@ import {
   aws_logs as logs,
   custom_resources as cr,
 } from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 
 export interface BashExecFunctionProps {
@@ -38,6 +39,27 @@ export interface BashExecFunctionProps {
    * @default - auto generated role.
    */
   readonly role?: iam.IRole;
+
+  /**
+   * Custom lambda execution vpc.
+   *
+   * @default - auto generated vpc.
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Custom lambda execution vpcSubnets.
+   *
+   * @default - auto generated vpcSubnets.
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * Custom lambda execution securityGroups.
+   *
+   * @default - auto generated securityGroups.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
 }
 
 export interface RunOps {
@@ -73,6 +95,9 @@ export class BashExecFunction extends Construct {
       logRetention: logs.RetentionDays.ONE_DAY,
       environment: props.environment,
       role: props.role,
+      vpc: props.vpc,
+      vpcSubnets: props.vpcSubnets,
+      securityGroups: props.securityGroups,
     });
     new CfnOutput(this, 'LogGroup', { value: this.handler.logGroup.logGroupName });
   }
